@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 
 const PickTheOddOneOut = ({ onComplete }) => {
   const sets = [
-    { options: ['Apple', 'Ant', 'Aeroplane', 'Dog'], odd: 'Dog' }, // D is odd
-    { options: ['Ball', 'Bat', 'Bed', 'Cat'], odd: 'Cat' },        // C is odd
-    { options: ['Sun', 'Sock', 'Sand', 'Map'], odd: 'Map' },      // M is odd
-    { options: ['Hat', 'Ham', 'Hen', 'Pig'], odd: 'Pig' },        // P is odd
-    { options: ['Car', 'Cup', 'Cake', 'Fan'], odd: 'Fan' },       // F is odd
+    { options: ['Apple','Dog', 'Ant', 'Air'], odd: 'Dog' },
+    { options: ['Cat', 'Ball', 'Bat', 'Bed', ], odd: 'Cat' },
+    { options: ['Sun', 'Sock', 'Sand', 'Map'], odd: 'Map' },
+    { options: ['Hat', 'Ham', 'Pig','Hen' ], odd: 'Pig' },
+    { options: ['Car', 'Cup', 'Cake', 'Fan'], odd: 'Fan' },
   ];
+
   const [currentSet, setCurrentSet] = useState(getRandomSet());
   const [feedback, setFeedback] = useState(null);
   const [score, setScore] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null); // Track the selected option
+  const [selectedOption, setSelectedOption] = useState(null);
 
   // Get a random set from the list
   function getRandomSet() {
@@ -44,38 +45,92 @@ const PickTheOddOneOut = ({ onComplete }) => {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h1>Pick the Odd One Out</h1>
-      <p>Which one doesn’t belong?</p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', margin: '20px' }}>
+    <div className="find-letter-container">
+      <style>{`
+        .find-letter-container {
+          text-align: center;
+          padding: 40px 20px;
+          background-color: #fdfdfd;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #222;
+        }
+        .find-letter-title {
+          font-size: 2rem;
+          margin-bottom: 10px;
+        }
+        .find-letter-instruction {
+          font-size: 1rem;
+          margin-bottom: 30px;
+        }
+        .letter-grid {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin: 20px;
+        }
+        .letter-button {
+          width: 100px;
+          height: 100px;
+          font-size: 18px;
+          font-weight: bold;
+          border: 2px solid #333;
+          background-color: #ffffff;
+          color: #333;
+          border-radius: 8px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background-color 0.3s, transform 0.2s;
+        }
+        .letter-button:hover {
+          background-color: #f0f0f0;
+          transform: scale(1.05);
+        }
+        .letter-button.correct {
+          background-color: #c8f7c5;
+          border-color: #2e7d32;
+          color: #2e7d32;
+        }
+        .letter-button.incorrect {
+          background-color: #fddede;
+          border-color: #c62828;
+          color: #c62828;
+        }
+        .score-display {
+          font-size: 1.2rem;
+          font-weight: 500;
+          color: #555;
+        }
+      `}</style>
+
+      <h1 className="find-letter-title">Pick the Odd One Out</h1>
+      <p className="find-letter-instruction">Which one doesn’t belong?</p>
+      <div className="letter-grid">
         {currentSet.options.map((option, index) => (
           <button
             key={index}
+            className={`letter-button ${
+              selectedOption === option && feedback === 'Correct!' ? 'correct' :
+              selectedOption === option && feedback === 'Try Again!' ? 'incorrect' : ''
+            }`}
             onClick={() => handleOptionClick(option)}
-            style={{
-              width: '100px',
-              height: '100px',
-              fontSize: '18px',
-              backgroundColor:
-                selectedOption === option && feedback === 'Correct!'
-                  ? '#90ee90' // Green for correct
-                  : selectedOption === option && feedback === 'Try Again!'
-                  ? '#ff6347' // Red for wrong
-                  : '#fff', // Default white
-              border: '2px solid #000',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
           >
             {option}
-            {/* Replace with: <img src={`/images/${option.toLowerCase()}.png`} alt={option} style={{ width: '80px' }} /> */}
           </button>
         ))}
       </div>
-      {feedback && <p style={{ color: feedback === 'Correct!' ? 'green' : 'red' }}>{feedback}</p>}
-      <p>Score: {score}</p>
+
+      {feedback && (
+        <p
+          className="score-display"
+          style={{ color: feedback === 'Correct!' ? '#2e7d32' : '#c62828' }}
+        >
+          {feedback}
+        </p>
+      )}
+
+      <p className="score-display">Score: {score}</p>
     </div>
   );
 };

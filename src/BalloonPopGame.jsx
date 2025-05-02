@@ -8,15 +8,21 @@ const BalloonPopGame = ({ onComplete }) => {
   const [popped, setPopped] = useState({}); // Track which balloons are popped
   const [feedback, setFeedback] = useState(null); // Feedback for correct/wrong pops
 
-  // Generate 5 balloons with a mix of vowels and consonants (at least 1 vowel)
+  // Generate 5 balloons with a mix of vowels and consonants (ensures at least 1 vowel but not 2 vowels together)
   function generateBalloons() {
     const allLetters = [...vowels, ...consonants];
-    const shuffled = allLetters.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 5); // Pick 5 random letters
-    // Ensure at least one vowel is included
-    if (!selected.some(letter => vowels.includes(letter))) {
-      const randomIndex = Math.floor(Math.random() * 5);
-      selected[randomIndex] = vowels[Math.floor(Math.random() * vowels.length)];
+    const selected = [];
+    let vowelCount = 0;
+
+    while (selected.length < 5) {
+      const letter = allLetters[Math.floor(Math.random() * allLetters.length)];
+      // Ensure at least 1 vowel is included but no 2 vowels in sequence
+      if (vowels.includes(letter) && vowelCount < 2) {
+        selected.push(letter);
+        vowelCount++;
+      } else if (consonants.includes(letter)) {
+        selected.push(letter);
+      }
     }
     return selected;
   }
@@ -27,7 +33,7 @@ const BalloonPopGame = ({ onComplete }) => {
       const letter = balloons[index];
       setPopped((prev) => ({ ...prev, [index]: true }));
       if (vowels.includes(letter)) {
-        setFeedback('Correct!');
+        setFeedback('Correct! 💥');
         const newScore = score + 1;
         setScore(newScore);
         if (newScore >= 2) {
@@ -60,44 +66,88 @@ const BalloonPopGame = ({ onComplete }) => {
   }, [score]);
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h1>Balloon Pop Game</h1>
-      <p>Pop the balloons with vowels (a, e, i, o, u)!</p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', margin: '20px', flexWrap: 'wrap' }}>
+    <div className="find-letter-container">
+      <style>{`
+        .find-letter-container {
+          text-align: center;
+          padding: 40px 20px;
+          background-color: #fdfdfd;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          color: #222;
+        }
+        .find-letter-title {
+          font-size: 2rem;
+          margin-bottom: 10px;
+        }
+        .find-letter-instruction {
+          font-size: 1rem;
+          margin-bottom: 30px;
+        }
+        .balloon-grid {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+          margin: 20px;
+          flex-wrap: wrap;
+        }
+        .balloon {
+          width: 80px;
+          height: 100px;
+          border-radius: 50% 50% 40% 40%; 
+          background-color: #f7d794;
+          color: #000000;
+          font-size: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s;
+          transform: scale(1);
+          opacity: 1;
+        }
+        .balloon.popped {
+          background-color: #90ee90;
+          transform: scale(0.8);
+          opacity: 0.5;
+        }
+        .balloon.incorrect {
+          background-color: #ff6347;
+        }
+        .score-display {
+          font-size: 1.2rem;
+          font-weight: 500;
+          color: #555;
+        }
+        .feedback {
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin-top: 10px;
+          color: green;
+        }
+      `}</style>
+
+      <h1 className="find-letter-title">Balloon Pop Game</h1>
+      <p className="find-letter-instruction">Pop the balloons with vowels (a, e, i, o, u)!</p>
+      <div className="balloon-grid">
         {balloons.map((letter, index) => (
           <div
             key={index}
             onClick={() => handlePop(index)}
-            style={{
-              width: '80px',
-              height: '100px',
-              borderRadius: '50% 50% 40% 40%', // Balloon-like shape
-              backgroundColor: popped[index] ? (vowels.includes(letter) ? '#90ee90' : '#ff6347') : getRandomColor(),
-              color: '#fff',
-              fontSize: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: popped[index] && vowels.includes(letter) ? 'default' : 'pointer',
-              transition: 'background-color 0.3s, transform 0.2s',
-              transform: popped[index] ? 'scale(0.8)' : 'scale(1)',
-              opacity: popped[index] ? 0.5 : 1,
-            }}
+            className={`balloon ${popped[index] ? (vowels.includes(letter) ? 'popped' : 'incorrect') : ''}`}
           >
-            {popped[index] ? (vowels.includes(letter) ? 'Pop!' : letter) : letter}
+            {popped[index] ? '💥' : letter} {/* Show 💥 when balloon is popped */}
           </div>
         ))}
       </div>
-      {feedback && <p style={{ color: feedback === 'Correct!' ? 'green' : 'red' }}>{feedback}</p>}
-      <p>Score: {score}</p>
+
+      {feedback && (
+        <p className="feedback" style={{ color: feedback === 'Correct! 💥' ? 'green' : 'red' }}>
+          {feedback}
+        </p>
+      )}
+      <p className="score-display">Score: {score}</p>
     </div>
   );
 };
-
-// Helper function to generate random balloon colors
-function getRandomColor() {
-  const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96c93d', '#f7d794'];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
 
 export default BalloonPopGame;

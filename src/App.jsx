@@ -3,6 +3,7 @@ import FindTheLetter from './FindTheLetter';
 import GuessTheMissingLetter from './GuessTheMissingLetter';
 import PickTheOddOneOut from './PickTheOddOneOut';
 import BalloonPopGame from './BalloonPopGame';
+import colorgame from './colorgame';
 
 const App = () => {
   const levels = [
@@ -13,6 +14,7 @@ const App = () => {
         { component: GuessTheMissingLetter, name: 'Guess the Missing Letter' },
         { component: PickTheOddOneOut, name: 'Pick the Odd One Out' },
         { component: BalloonPopGame, name: 'Balloon Pop Game (Vowel Sounds)' },
+        { component: colorgame, name: 'colorgame' },
       ],
     },
     {
